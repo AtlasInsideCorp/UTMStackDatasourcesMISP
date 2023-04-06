@@ -3,6 +3,7 @@ package database
 import (
 	"fmt"
 
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
@@ -87,4 +88,13 @@ func (s *dataBase) Delete(data interface{}, itemID string) error {
 		return fmt.Errorf("failed to update item in database: %v", err)
 	}
 	return nil
+}
+
+// Create a new BD
+func newDB(path string) (*dataBase, error) {
+	db, err := gorm.Open(sqlite.Open(path), &gorm.Config{})
+	if err != nil {
+		return nil, fmt.Errorf("failed to open database: %v", err)
+	}
+	return &dataBase{connection: db}, nil
 }
