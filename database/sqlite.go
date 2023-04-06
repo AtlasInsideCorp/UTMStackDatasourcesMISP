@@ -79,3 +79,12 @@ func (s *dataBase) UpdateOnlyField(data, newValue interface{}, itemID, columnNam
 	}
 	return nil
 }
+
+// Delete an element in database
+func (s *dataBase) Delete(data interface{}, itemID string) error {
+	err := s.connection.Where("item_id = ?", itemID).Delete(data).Error
+	if err != nil {
+		return fmt.Errorf("failed to update item in database: %v", err)
+	}
+	return nil
+}
