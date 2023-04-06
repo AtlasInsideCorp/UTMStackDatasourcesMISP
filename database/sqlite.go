@@ -90,7 +90,7 @@ func (s *dataBase) Delete(data interface{}, itemID string) error {
 	return nil
 }
 
-// Create a new BD
+// Create a new DBS
 func newDB(path string) (*dataBase, error) {
 	db, err := gorm.Open(sqlite.Open(path), &gorm.Config{})
 	if err != nil {
