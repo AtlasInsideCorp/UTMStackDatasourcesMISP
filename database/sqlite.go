@@ -28,3 +28,12 @@ func (s *dataBase) Close() error {
 	sqlDB.Close()
 	return nil
 }
+
+// AddNew adds a new item to the dataBase
+func (s *dataBase) AddNew(data interface{}) error {
+	err := s.connection.Create(data).Error
+	if err != nil {
+		return fmt.Errorf("failed to add new item to database: %v", err)
+	}
+	return nil
+}
