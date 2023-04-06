@@ -46,3 +46,12 @@ func (s *dataBase) GetAll(data interface{}) error {
 	}
 	return nil
 }
+
+// GetByID gets an element from database using the ItemID
+func (s *dataBase) GetByID(data interface{}, itemID string) error {
+	err := s.connection.Where("item_id = ?", itemID).First(data).Error
+	if err != nil {
+		return fmt.Errorf("failed to get data from database: %v", err)
+	}
+	return nil
+}
