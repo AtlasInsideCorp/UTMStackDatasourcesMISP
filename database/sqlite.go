@@ -61,3 +61,12 @@ func (s *dataBase) CheckIfExist(data interface{}, itemID string) bool {
 	err := s.connection.Where("item_id = ?", itemID).First(data).Error
 	return err == nil
 }
+
+// Update an item in database
+func (s *dataBase) Update(data interface{}, itemID string) error {
+	err := s.connection.Where("item_id = ?", itemID).Updates(data).Error
+	if err != nil {
+		return fmt.Errorf("failed to update item in database: %v", err)
+	}
+	return nil
+}
