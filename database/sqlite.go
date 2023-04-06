@@ -18,3 +18,13 @@ func (s *dataBase) Migrate(data interface{}) error {
 	}
 	return nil
 }
+
+// Close the dataBase
+func (s *dataBase) Close() error {
+	sqlDB, err := s.connection.DB()
+	if err != nil {
+		return fmt.Errorf("failed to close database: %v", err)
+	}
+	sqlDB.Close()
+	return nil
+}
