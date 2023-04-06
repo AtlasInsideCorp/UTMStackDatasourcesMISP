@@ -70,3 +70,12 @@ func (s *dataBase) Update(data interface{}, itemID string) error {
 	}
 	return nil
 }
+
+// UpdateOnlyField updates only one field of an item in the database
+func (s *dataBase) UpdateOnlyField(data, newValue interface{}, itemID, columnName string) error {
+	err := s.connection.Model(data).Where("item_id = ?", itemID).Update(columnName, newValue).Error
+	if err != nil {
+		return fmt.Errorf("failed to update item in database: %v", err)
+	}
+	return nil
+}
