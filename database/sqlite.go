@@ -55,3 +55,9 @@ func (s *dataBase) GetByID(data interface{}, itemID string) error {
 	}
 	return nil
 }
+
+// CheckIfExist checks if the item exists in the database by looking for it by its ItemID
+func (s *dataBase) CheckIfExist(data interface{}, itemID string) bool {
+	err := s.connection.Where("item_id = ?", itemID).First(data).Error
+	return err == nil
+}
