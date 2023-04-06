@@ -37,3 +37,12 @@ func (s *dataBase) AddNew(data interface{}) error {
 	}
 	return nil
 }
+
+// GetAll gets all the items in the dataBase
+func (s *dataBase) GetAll(data interface{}) error {
+	err := s.connection.Find(data).Error
+	if err != nil {
+		return fmt.Errorf("failed to get all items from database: %v", err)
+	}
+	return nil
+}
