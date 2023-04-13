@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"bytes"
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
@@ -8,13 +9,17 @@ import (
 	"net/http"
 )
 
-// GetData allows you to make a get request to the MISP api and save the response
-func getData(key, url string, data interface{}) error {
+// getData allows you to make a get request to the MISP api and save the response
+func getData(key, url string, data, body interface{}) error {
 	transCfg := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
 	clientHttp := &http.Client{Transport: transCfg}
-	req, err := http.NewRequest("GET", url, nil)
+	bodyJson, err := json.Marshal(body)
+	if err != nil {
+		return fmt.Errorf("error to marshaling body: %v", err)
+	}
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(bodyJson))
 	if err != nil {
 		return fmt.Errorf("error to create a request: %v", err)
 	}
