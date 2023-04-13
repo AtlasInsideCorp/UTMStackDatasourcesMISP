@@ -28,11 +28,9 @@ func GetConfig() Configuration {
 				utils.LoadEnv()
 			}
 		}
-
 		configurationInstance.ApiKey = utils.Getenv("API_KEY")
 		configurationInstance.ApiUrl = utils.Getenv("API_URL")
 		configurationInstance.EventsPath = utils.Getenv("EVENTS_PATH")
 	})
-
 	return configurationInstance
 }
