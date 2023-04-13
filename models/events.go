@@ -175,3 +175,44 @@ type RequestEventsRestSearch struct {
 	Limit        int    `json:"limit"`
 	ReturnFormat string `json:"returnFormat"`
 }
+
+type CleanedEventsBody struct {
+	Events CleanedEvent `json:"Event"`
+}
+
+type CleanedEvent struct {
+	Analysis         string             `json:"analysis"`
+	Date             string             `json:"date"`
+	ExtendsUUID      string             `json:"extends_uuid"`
+	Info             string             `json:"info"`
+	PublishTimestamp string             `json:"publish_timestamp"`
+	Published        bool               `json:"published"`
+	ThreatLevelID    string             `json:"threat_level_id"`
+	Timestamp        string             `json:"timestamp"`
+	UUID             string             `json:"uuid"`
+	Orgc             OrgCleaned         `json:"Orgc"`
+	Tag              []TagCleaned       `json:"Tag"`
+	Attribute        []AttributeCleaned `json:"Attribute"`
+}
+
+type OrgCleaned struct {
+	Name string `json:"name"`
+	UUID string `json:"uuid"`
+}
+
+type TagCleaned struct {
+	Colour string `json:"colour"`
+	Name   string `json:"name"`
+}
+
+type AttributeCleaned struct {
+	Category           string `json:"category"`
+	Comment            string `json:"comment"`
+	Deleted            bool   `json:"deleted"`
+	DisableCorrelation bool   `json:"disable_correlation"`
+	Timestamp          string `json:"timestamp"`
+	ToIDS              bool   `json:"to_ids"`
+	Type               string `json:"type"`
+	UUID               string `json:"uuid"`
+	Value              string `json:"value"`
+}
