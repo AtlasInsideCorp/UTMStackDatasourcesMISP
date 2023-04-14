@@ -1,56 +1,82 @@
 package controller
 
 import (
+	"encoding/json"
+	"fmt"
 	"log"
+	"os"
+	"path/filepath"
 	"sync"
 	"time"
 
-	"github.com/KbaYero/UTMStackDatasourcesMISP/database"
+	"github.com/KbaYero/UTMStackDatasourcesMISP/config"
 	"github.com/KbaYero/UTMStackDatasourcesMISP/models"
+	"github.com/KbaYero/UTMStackDatasourcesMISP/utils"
 )
 
-// ProcessNewData requests the data from the MISP API, to later process it and save it in the database
-// If the data exists, check if it can be updated
-func ProcessNewData(db database.ISqlite, apiKey, apiUrl string, timeCheck int, mu *sync.Mutex) {
-	go func() {
-	ExternalLoop:
-		for {
-			var lisAttrJson []models.AttributesJson
-			var listAttrDB []models.AttributeDB
-			err := getData(apiKey, apiUrl+"/attributes", &lisAttrJson)
-			if err != nil {
-				log.Println("error getting data: ", err)
-				time.Sleep(time.Minute * time.Duration(timeCheck))
-				continue
-			}
-			for _, attJson := range lisAttrJson {
-				attDB := AttrFromJsonToDB(attJson)
-				listAttrDB = append(listAttrDB, attDB)
-			}
-			mu.Lock()
-			for _, attDB := range listAttrDB {
-				if db.CheckIfExist(&attDB, attDB.ItemID) {
-					err := db.Update(&attDB, attDB.ItemID)
-					if err != nil {
-						mu.Unlock()
-						log.Println("error updating item in the database: ", err)
-						time.Sleep(time.Minute * time.Duration(timeCheck))
-						continue ExternalLoop
-					}
+// ProcessAttributes processes data of type attribute
+func ProcessData(cnf config.Configuration) {
+	for {
+		if utils.CheckIfExistPath(cnf.EventsPath) {
+			os.RemoveAll(cnf.EventsPath)
+		}
+		os.Mkdir(cnf.EventsPath, 0700)
+
+		var wg sync.WaitGroup
+		concurrency := 10
+		semaphore := make(chan bool, concurrency)
+		i := -1
+		stop := false
+
+		for !stop {
+			semaphore <- true
+			wg.Add(1)
+			i++
+
+			go func(i int) {
+				defer func() {
+					wg.Done()
+					<-semaphore
+				}()
+
+				var listEvents models.ResponseBodyGetEvents
+				reqBody := models.RequestEventsRestSearch{
+					Page:         i,
+					Limit:        100,
+					ReturnFormat: "json",
+				}
+				err := getData(cnf.ApiKey, "https://"+cnf.Instance+"/events/restSearch", &listEvents, reqBody)
+				if err != nil {
+					log.Printf("error getting data for page %d: %v", i, err)
+					return
+				}
+				if len(listEvents.Response) == 0 {
+					stop = true
 				} else {
-					attDB.SendToCorrelation = false
-					err = db.AddNew(&attDB)
+					var eventCleaned []models.CleanedEventsBody
+					for _, event := range listEvents.Response {
+						eventCleaned = append(eventCleaned, cleanData(event))
+					}
+					file, err := json.MarshalIndent(eventCleaned, "", " ")
 					if err != nil {
-						mu.Unlock()
-						log.Println("error adding new item in the database: ", err)
-						time.Sleep(time.Minute * time.Duration(timeCheck))
-						continue ExternalLoop
+						log.Printf("error saving data to json file for page %d: %v", i, err)
+						return
+					}
+					currentTime := fmt.Sprintf("%d", time.Now().UnixNano()/int64(time.Millisecond))
+					filename := filepath.Join(cnf.EventsPath, "misp-instance-"+currentTime+".json")
+					err = os.WriteFile(filename, file, 0644)
+					if err != nil {
+						log.Printf("error creating json file for page %d: %v", i, err)
+						return
 					}
 				}
+			}(i)
+			if stop {
+				break
 			}
-			mu.Unlock()
-			log.Println("Data updated successfully")
-			time.Sleep(time.Minute * time.Duration(timeCheck))
 		}
-	}()
+		wg.Wait()
+		log.Println("Event update process finished")
+		time.Sleep(time.Duration(cnf.TimeCheck) * time.Hour)
+	}
 }
