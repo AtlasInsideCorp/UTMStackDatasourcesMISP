@@ -2,6 +2,7 @@ package config
 
 import (
 	"os"
+	"strconv"
 	"sync"
 
 	"github.com/KbaYero/UTMStackDatasourcesMISP/utils"
@@ -9,8 +10,10 @@ import (
 
 type Configuration struct {
 	ApiKey     string
-	ApiUrl     string
+	Instance   string
 	EventsPath string
+	ServerPort string
+	TimeCheck  int
 }
 
 var (
@@ -29,8 +32,11 @@ func GetConfig() Configuration {
 			}
 		}
 		configurationInstance.ApiKey = utils.Getenv("API_KEY")
-		configurationInstance.ApiUrl = utils.Getenv("API_URL")
+		configurationInstance.Instance = utils.Getenv("MISP_INSTANCE")
 		configurationInstance.EventsPath = utils.Getenv("EVENTS_PATH")
+		configurationInstance.ServerPort = utils.Getenv("SERVER_PORT")
+		checkString := utils.Getenv("TIME_CHECK")
+		configurationInstance.TimeCheck, _ = strconv.Atoi(checkString)
 	})
 	return configurationInstance
 }

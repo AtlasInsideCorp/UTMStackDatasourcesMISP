@@ -15,7 +15,7 @@ import (
 )
 
 // ProcessAttributes processes data of type attribute
-func ProcessData(cnf config.Configuration, TimeCheck int) {
+func ProcessData(cnf config.Configuration) {
 	for {
 		if utils.CheckIfExistPath(cnf.EventsPath) {
 			os.RemoveAll(cnf.EventsPath)
@@ -45,7 +45,7 @@ func ProcessData(cnf config.Configuration, TimeCheck int) {
 					Limit:        100,
 					ReturnFormat: "json",
 				}
-				err := getData(cnf.ApiKey, cnf.ApiUrl+"/events/restSearch", &listEvents, reqBody)
+				err := getData(cnf.ApiKey, "https://"+cnf.Instance+"/events/restSearch", &listEvents, reqBody)
 				if err != nil {
 					log.Printf("error getting data for page %d: %v", i, err)
 					return
@@ -77,6 +77,6 @@ func ProcessData(cnf config.Configuration, TimeCheck int) {
 		}
 		wg.Wait()
 		log.Println("Event update process finished")
-		time.Sleep(time.Duration(TimeCheck) * time.Hour)
+		time.Sleep(time.Duration(cnf.TimeCheck) * time.Hour)
 	}
 }

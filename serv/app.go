@@ -26,8 +26,8 @@ func ShowEvents(cnf config.Configuration) {
 
 	// Serve static files
 	http.Handle("/", fs)
-	fmt.Println("Serving on port 8000")
-	fmt.Println(http.ListenAndServe(":8000", nil))
+	fmt.Println("Serving on port ", cnf.ServerPort)
+	fmt.Println(http.ListenAndServe(":"+cnf.ServerPort, nil))
 }
 
 func rootPath(h http.Handler) http.Handler {

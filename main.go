@@ -11,13 +11,9 @@ import (
 	"github.com/KbaYero/UTMStackDatasourcesMISP/serv"
 )
 
-const (
-	TimeCheck int = 12
-)
-
 func main() {
 	cnf := config.GetConfig()
-	go controller.ProcessData(cnf, TimeCheck)
+	go controller.ProcessData(cnf)
 
 	sigCh := make(chan os.Signal, 1)
 	signal.Notify(sigCh, syscall.SIGINT)
