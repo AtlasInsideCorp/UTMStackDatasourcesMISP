@@ -8,7 +8,7 @@ import (
 
 	"github.com/KbaYero/UTMStackDatasourcesMISP/config"
 	"github.com/KbaYero/UTMStackDatasourcesMISP/controller"
-	"github.com/KbaYero/UTMStackDatasourcesMISP/fileserver"
+	"github.com/KbaYero/UTMStackDatasourcesMISP/serv"
 )
 
 const (
@@ -27,5 +27,5 @@ func main() {
 		os.Exit(0)
 	}()
 
-	fileserver.ShowEvents(cnf)
+	serv.ShowEvents(cnf)
 }

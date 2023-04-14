@@ -35,5 +35,33 @@ func cleanData(data models.EventsRestSearch) models.CleanedEventsBody {
 		newAttribute.Value = attr.Value
 		cleanedData.Events.Attribute = append(cleanedData.Events.Attribute, newAttribute)
 	}
+	for _, obj := range data.Events.Object {
+		var newObject models.ObjectCleaned
+		newObject.Comment = obj.Comment
+		newObject.Deleted = obj.Deleted
+		newObject.Description = obj.Description
+		newObject.MetaCategory = obj.MetaCategory
+		newObject.Name = obj.Name
+		newObject.TemplateUUID = obj.TemplateUUID
+		newObject.TemplateVersion = obj.TemplateVersion
+		newObject.Timestamp = obj.Timestamp
+		newObject.UUID = obj.UUID
+		newObject.ObjectReference = make([]string, 0)
+		for _, attrO := range obj.Attribute {
+			var newAttributeWithObject models.AttributeCleanedWithObject
+			newAttributeWithObject.Category = attrO.Category
+			newAttributeWithObject.Comment = attrO.Comment
+			newAttributeWithObject.Deleted = attrO.Deleted
+			newAttributeWithObject.DisableCorrelation = attrO.DisableCorrelation
+			newAttributeWithObject.ObjectRelation = attrO.ObjectRelation
+			newAttributeWithObject.Timestamp = attrO.Timestamp
+			newAttributeWithObject.ToIDS = attrO.ToIDS
+			newAttributeWithObject.Type = attrO.Type
+			newAttributeWithObject.UUID = attrO.UUID
+			newAttributeWithObject.Value = attrO.Value
+			newObject.Attribute = append(newObject.Attribute, newAttributeWithObject)
+		}
+		cleanedData.Events.Object = append(cleanedData.Events.Object, newObject)
+	}
 	return cleanedData
 }

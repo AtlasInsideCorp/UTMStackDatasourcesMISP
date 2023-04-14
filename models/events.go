@@ -193,6 +193,7 @@ type CleanedEvent struct {
 	Orgc             OrgCleaned         `json:"Orgc"`
 	Tag              []TagCleaned       `json:"Tag"`
 	Attribute        []AttributeCleaned `json:"Attribute"`
+	Object           []ObjectCleaned    `json:"Object"`
 }
 
 type OrgCleaned struct {
@@ -215,4 +216,31 @@ type AttributeCleaned struct {
 	Type               string `json:"type"`
 	UUID               string `json:"uuid"`
 	Value              string `json:"value"`
+}
+
+type AttributeCleanedWithObject struct {
+	Category           string `json:"category"`
+	Comment            string `json:"comment"`
+	Deleted            bool   `json:"deleted"`
+	DisableCorrelation bool   `json:"disable_correlation"`
+	ObjectRelation     string `json:"object_relation"`
+	Timestamp          string `json:"timestamp"`
+	ToIDS              bool   `json:"to_ids"`
+	Type               string `json:"type"`
+	UUID               string `json:"uuid"`
+	Value              string `json:"value"`
+}
+
+type ObjectCleaned struct {
+	Comment         string                       `json:"comment"`
+	Deleted         bool                         `json:"deleted"`
+	Description     string                       `json:"description"`
+	MetaCategory    string                       `json:"meta-category"`
+	Name            string                       `json:"name"`
+	TemplateUUID    string                       `json:"template_uuid"`
+	TemplateVersion string                       `json:"template_version"`
+	Timestamp       string                       `json:"timestamp"`
+	UUID            string                       `json:"uuid"`
+	ObjectReference []string                     `json:"ObjectReference"`
+	Attribute       []AttributeCleanedWithObject `json:"Attribute"`
 }
